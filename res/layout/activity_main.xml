@@ -1,0 +1,74 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="org.tech.frontier.ui.ArticlesActivity" >
+
+    <include layout="@layout/toolbar_layout" />
+
+    <android.support.v4.widget.DrawerLayout
+        android:id="@+id/drawer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+
+        <!-- 文章列表界面 -->
+
+        <FrameLayout
+            android:id="@+id/articles_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <!-- 侧滑菜单内容 -->
+
+        <LinearLayout
+            android:id="@+id/drawer_view"
+            android:layout_width="300dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="left"
+            android:background="#f0f0f0"
+            android:orientation="vertical" >
+
+            <!-- 用户头像界面 -->
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:background="@drawable/user_bg"
+                android:clickable="true"
+                android:padding="10dp" >
+
+                <!-- 用户头像界面 -->
+
+                <ImageView
+                    android:id="@+id/user_icon_imageview"
+                    android:layout_width="80dp"
+                    android:layout_height="80dp"
+                    android:layout_centerVertical="true"
+                    android:contentDescription="@string/app_name"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/user_default" />
+
+                <TextView
+                    android:id="@+id/username_tv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="20dp"
+                    android:layout_toRightOf="@id/user_icon_imageview"
+                    android:gravity="center"
+                    android:text="@string/not_login"
+                    android:textSize="20sp" />
+            </RelativeLayout>
+
+            <!-- 菜单界面 -->
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/menu_recyclerview"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" >
+            </android.support.v7.widget.RecyclerView>
+        </LinearLayout>
+    </android.support.v4.widget.DrawerLayout>
+
+</LinearLayout>
