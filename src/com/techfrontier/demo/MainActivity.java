@@ -26,9 +26,7 @@ import java.util.List;
 public class MainActivity extends ActionBarActivity {
 
     protected FragmentManager mFragmentManager;
-    protected int mFrgmContainer;
-    Fragment mArticleFragment = new ArticlesFragment();
-    Fragment mJobFragment = new JobsFragment();
+    Fragment mArticleFragment = new WenzhangFragment();
     Fragment mAboutFragment;
     private DrawerLayout mDrawerLayout;
     private RecyclerView mMenuRecyclerView;
@@ -63,8 +61,7 @@ public class MainActivity extends ActionBarActivity {
         mMenuRecyclerView = (RecyclerView) findViewById(R.id.menu_recyclerview);
         mMenuRecyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
         List<MenuItem> menuItems = new ArrayList<MenuItem>();
-        menuItems.add(new MenuItem(getString(R.string.all), R.drawable.home));
-        menuItems.add(new MenuItem(getString(R.string.jobs), R.drawable.hire_icon));
+        menuItems.add(new MenuItem(getString(R.string.article), R.drawable.home));
         menuItems.add(new MenuItem(getString(R.string.about_menu), R.drawable.about));
         menuItems.add(new MenuItem(getString(R.string.exit), R.drawable.exit));
         MenuAdapter menuAdapter = new MenuAdapter(menuItems);
@@ -88,17 +85,10 @@ public class MainActivity extends ActionBarActivity {
                         .replace(R.id.articles_container, mArticleFragment)
                         .commit();
                 break;
-            case R.drawable.hire_icon: // 招聘信息
-                if (mJobFragment == null) {
-                    mJobFragment = new JobsFragment();
-                }
-                mFragmentManager.beginTransaction().replace(R.id.articles_container, mJobFragment)
-                        .commit();
-                break;
 
             case R.drawable.about: // 招聘信息
                 if (mAboutFragment == null) {
-                    mAboutFragment = new AboutFragment();
+                    mAboutFragment = new GuanyuFragment();
                 }
                 mFragmentManager.beginTransaction()
                         .replace(R.id.articles_container, mAboutFragment)

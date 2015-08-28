@@ -42,7 +42,7 @@ import android.widget.ProgressBar;
 import com.android.volley.VolleyError;
 import com.techfrontier.demo.beans.ArticleDetail;
 
-import org.tech.frontier.db.bad.DatabaseHelper;
+import org.tech.frontier.db.DatabaseHelper;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -55,7 +55,7 @@ import java.net.URL;
  * 
  * @author mrsimple
  */
-public class DetailActivity extends ActionBarActivity {
+public class NeirongActivity extends ActionBarActivity {
 
     protected Toolbar mToolbar;
     ProgressBar mProgressBar;

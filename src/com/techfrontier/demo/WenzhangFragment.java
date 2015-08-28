@@ -43,7 +43,7 @@ import com.techfrontier.demo.beans.Article;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.tech.frontier.db.bad.DatabaseHelper;
+import org.tech.frontier.db.DatabaseHelper;
 import org.tech.frontier.listeners.OnItemClickListener;
 import org.tech.frontier.widgets.AutoLoadRecyclerView;
 import org.tech.frontier.widgets.AutoLoadRecyclerView.OnLoadListener;
@@ -64,7 +64,7 @@ import java.util.List;
  * 
  * @author mrsimple
  */
-public class ArticlesFragment extends Fragment implements OnRefreshListener,
+public class WenzhangFragment extends Fragment implements OnRefreshListener,
         OnLoadListener {
     protected int mCategory = Article.ALL;
     protected ArticleAdapter mAdapter;
@@ -209,7 +209,7 @@ public class ArticlesFragment extends Fragment implements OnRefreshListener,
     }
 
     protected void loadArticle(Article article) {
-        Intent intent = new Intent(getActivity(), DetailActivity.class);
+        Intent intent = new Intent(getActivity(), NeirongActivity.class);
         intent.putExtra("post_id", article.post_id);
         intent.putExtra("title", article.title);
         startActivity(intent);

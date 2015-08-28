@@ -22,35 +22,17 @@
  * THE SOFTWARE.
  */
 
-package org.tech.frontier.net.handlers;
+package com.techfrontier.demo;
 
-import com.techfrontier.demo.beans.Job;
+import android.app.Fragment;
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import java.util.ArrayList;
-import java.util.List;
-
-public class JobHander implements RespHandler<List<Job>, JSONArray> {
-
+public class GuanyuFragment extends Fragment {
     @Override
-    public List<Job> parse(JSONArray data) {
-        List<Job> jobs = new ArrayList<Job>();
-        int length = data.length();
-        for (int i = 0; i < length; i++) {
-            JSONObject jsonObject = data.optJSONObject(i);
-            Job jobItem = new Job();
-            jobItem.company = jsonObject.optString("company");
-            jobItem.type = Integer.valueOf(jsonObject.optInt("type"));
-            jobItem.job = jsonObject.optString("job");
-            jobItem.desc = jsonObject.optString("job_desc");
-            jobItem.email = jsonObject.optString("email");
-            jobItem.url = jsonObject.optString("url");
-            // 
-            jobs.add(jobItem);
-        }
-        return jobs;
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.fragment_about, container, false);
     }
-
 }

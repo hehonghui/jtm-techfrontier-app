@@ -26,7 +26,7 @@ package com.techfrontier.demo.app;
 
 import android.app.Application;
 
-import org.tech.frontier.db.bad.DatabaseHelper;
+import org.tech.frontier.db.DatabaseHelper;
 
 public class DemoApplication extends Application {
     @Override
