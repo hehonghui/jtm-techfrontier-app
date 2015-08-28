@@ -22,7 +22,7 @@
  * THE SOFTWARE.
  */
 
-package com.techfrontier.demo.adapters;
+package com.techfrontier.demo.adapters.refactor;
 
 import android.support.v7.widget.RecyclerView.Adapter;
 import android.support.v7.widget.RecyclerView.ViewHolder;
@@ -30,6 +30,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+
+import org.tech.frontier.listeners.OnItemClickListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,7 +44,6 @@ import java.util.List;
  * @param <VH> ViewHolder类型
  */
 public abstract class BaseAdapter<T, VH extends ViewHolder> extends Adapter<VH> {
-
     List<T> mDataSet = new ArrayList<T>();
     OnItemClickListener<T> mItemClickListener;
 
@@ -97,9 +98,4 @@ public abstract class BaseAdapter<T, VH extends ViewHolder> extends Adapter<VH> 
             }
         });
     }
-
-    public static interface OnItemClickListener<T> {
-        public void onClick(T item);
-    }
-
 }

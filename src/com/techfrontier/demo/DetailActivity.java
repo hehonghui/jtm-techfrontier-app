@@ -25,13 +25,12 @@
 package com.techfrontier.demo;
 
 import android.annotation.SuppressLint;
+import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
-import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
-import android.view.Menu;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.webkit.WebChromeClient;
@@ -40,6 +39,17 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ProgressBar;
 
+import com.android.volley.VolleyError;
+import com.techfrontier.demo.beans.ArticleDetail;
+
+import org.tech.frontier.db.bad.DatabaseHelper;
+
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+
 /**
  * 文章阅读页面,使用WebView加载文章。
  * 
@@ -47,62 +57,19 @@ import android.widget.ProgressBar;
  */
 public class DetailActivity extends ActionBarActivity {
 
+    protected Toolbar mToolbar;
     ProgressBar mProgressBar;
     WebView mWebView;
     private String mPostId;
     private String mTitle;
-    private String mTargetUrl;
+    String mJobUrl;
 
-    private DrawerLayout mDrawerLayout;
-    protected Toolbar mToolbar;
-    private ActionBarDrawerToggle mDrawerToggle;
-
-    // ArticleDetailPresenter mPresenter = new ArticleDetailPresenter(this);
-    // SharePresenter mSharePresenter;
-    // FavoritePresenter mFavoritePresenter;
-
+    @SuppressLint("SetJavaScriptEnabled")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
-        setupToolbar();
-        initViews();
-        initArticleUrl();
-        // if (!TextUtils.isEmpty(mTargetUrl)) { // 加载推荐的链接
-        // mWebView.loadUrl(mTargetUrl);
-        // } else if (!TextUtils.isEmpty(mPostId)) { // 加载文章
-        // mPresenter.fetchArticleContent(mPostId);
-        // } else {
-        // mWebView.loadDataWithBaseURL("", "<h3>大哥,你的页面没找到呐~</h3>",
-        // "text/html", "utf-8", "");
-        // }
 
-        // mSharePresenter = new SharePresenter(getApplicationContext());
-    }
-
-    protected void setupToolbar() {
-        mToolbar = (Toolbar) findViewById(R.id.toolbar);
-        mToolbar.setTitle(R.string.app_name);
-        setSupportActionBar(mToolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        mToolbar.setNavigationOnClickListener(new OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
-
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer);
-        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, mToolbar,
-                R.string.drawer_open,
-                R.string.drawer_close);
-        mDrawerToggle.syncState();
-        mDrawerLayout.setDrawerListener(mDrawerToggle);
-    }
-
-    @SuppressLint("SetJavaScriptEnabled")
-    private void initViews() {
         mProgressBar = (ProgressBar) findViewById(R.id.loading_progressbar);
         mWebView = (WebView) findViewById(R.id.articles_webview);
         mWebView.getSettings().setJavaScriptEnabled(true);
@@ -126,76 +93,136 @@ public class DetailActivity extends ActionBarActivity {
                 }
             }
         });
-    }
 
-    private void initArticleUrl() {
+        mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        mToolbar.setTitle(R.string.app_name);
+        setSupportActionBar(mToolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        mToolbar.setNavigationOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+
         Bundle extraBundle = getIntent().getExtras();
-        if (extraBundle != null) {
+        if (extraBundle != null && !extraBundle.containsKey("job_url")) {
             mPostId = extraBundle.getString("post_id");
             mTitle = extraBundle.getString("title");
-            mTargetUrl = extraBundle.getString("url");
+        } else {
+            mJobUrl = extraBundle.getString("job_url");
+        }
+
+        ArticleDetail cacheDetail = DatabaseHelper.getInstance().loadArticleDetail(mPostId);
+        if (!TextUtils.isEmpty(cacheDetail.content)) {
+            loadArticle2Webview(cacheDetail.content);
+        } else if (!TextUtils.isEmpty(mPostId)) {
+            getArticleContent();
+        } else {
+            mWebView.loadUrl(mJobUrl);
         }
     }
 
-    // @Override
-    // public void fetchedData(ArticleDetail result) {
-    // mWebView.loadDataWithBaseURL("", HtmlTemplate.wrap(mTitle,
-    // result.content),
-    // "text/html", "utf8", "404");
-    // }
-    //
-    // @Override
-    // protected void onNewIntent(Intent intent) {
-    // super.onNewIntent(intent);
-    // mSharePresenter.handleWeiboResponse(intent);
-    // }
+    private void getArticleContent() {
+        new AsyncTask<Void, Void, String>() {
+            @Override
+            protected String doInBackground(Void... params) {
+                HttpURLConnection urlConnection = null;
+                try {
+                    urlConnection = (HttpURLConnection) new URL(
+                            "http://www.devtf.cn/api/v1/?type=article&post_id=" + mPostId)
+                            .openConnection();
+                    urlConnection.connect();
+                    StringBuilder sBuilder = new StringBuilder();
+                    String line = null;
+                    InputStream netsInputStream = urlConnection.getInputStream();
+                    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(
+                            netsInputStream));
+                    while ((line = bufferedReader.readLine()) != null) {
+                        sBuilder.append(line).append("\n");
+                    }
+                    return sBuilder.toString();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                } finally {
+                    urlConnection.disconnect();
+                }
+                return "";
+            }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.detail_menu, menu);
-        // mPresenter.isFavorited(mPostId);
-        return super.onCreateOptionsMenu(menu);
+            @Override
+            protected void onPostExecute(String result) {
+                loadArticle2Webview(result);
+                DatabaseHelper.getInstance().saveArticleDetails(new ArticleDetail(mPostId, result));
+            }
+        }.execute();
     }
 
-    private String getShareUrl() {
-        return TextUtils.isEmpty(mTargetUrl) ? "http://www.devtf.cn/?p=" + mPostId : mTargetUrl;
+    // private String readStream(InputStream stream) throws IOException {
+    // BufferedReader bufferedReader = new BufferedReader(new
+    // InputStreamReader(stream));
+    // StringBuilder sBuilder = new StringBuilder();
+    // String line = null;
+    // while ((line = bufferedReader.readLine()) != null) {
+    // sBuilder.append(line).append("\n");
+    // }
+    // return sBuilder.toString();
+    // }
+
+    private void loadArticle2Webview(String htmlContent) {
+        mWebView.loadDataWithBaseURL("", wrapHtml(mTitle, htmlContent),
+                "text/html", "utf8", "404");
     }
 
-    // @Override
-    // public boolean onOptionsItemSelected(MenuItem item) {
-    // switch (item.getItemId()) {
-    // case R.id.action_share:
-    // mSharePresenter.share(this, mTitle, getShareUrl());
-    // break;
-    //
-    // case R.id.action_favorite:
-    // mPresenter.favorite(this, mPostId, isFavorited);
-    // break;
-    // default:
-    // break;
-    // }
-    // return true;
-    // }
-    //
-    // @Override
-    // protected void onActivityResult(int requestCode, int resultCode, Intent
-    // data) {
-    // super.onActivityResult(requestCode, resultCode, data);
-    // // mPresenter.onActivityResult(requestCode, resultCode, data);
-    // }
-    //
-    // @Override
-    // public void showLoading() {
-    // mProgressBar.setVisibility(View.VISIBLE);
-    // }
-    //
-    // @Override
-    // public void hideLoading() {
-    // mProgressBar.setVisibility(View.GONE);
-    // }
-    //
-    // @Override
-    // public void onError(VolleyError error) {
-    // hideLoading();
-    // }
+    private static String wrapHtml(String title, String content) {
+        final StringBuilder sb = new StringBuilder();
+        sb.append("<!DOCTYPE html>");
+        sb.append("<html dir=\"ltr\" lang=\"zh\">");
+        sb.append("<head>");
+        sb.append("<meta name=\"viewport\" content=\"width=100%; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;\" />");
+        sb.append("<link rel=\"stylesheet\" href='file:///android_asset/style.css' type=\"text/css\" media=\"screen\" />");
+        sb.append("<link rel=\"stylesheet\" href='file:///android_asset/default.min.css' type=\"text/css\" media=\"screen\" />");
+        sb.append("</head>");
+        sb.append("<body style=\"padding:0px 8px 8px 8px;\">");
+        sb.append("<div id=\"pagewrapper\">");
+        sb.append("<div id=\"mainwrapper\" class=\"clearfix\">");
+        sb.append("<div id=\"maincontent\">");
+        sb.append("<div class=\"post\">");
+        sb.append("<div class=\"posthit\">");
+        sb.append("<div class=\"postinfo\">");
+        sb.append("<h2 class=\"thetitle\">");
+        sb.append("<a>");
+        sb.append(title);
+        sb.append("</a>");
+        sb.append("</h2>");
+        sb.append("<hr/>");
+        sb.append("</div>");
+        sb.append("<div class=\"entry\">");
+        sb.append(content);
+        sb.append("</div>");
+        sb.append("</div>");
+        sb.append("</div>");
+        sb.append("</div>");
+        sb.append("</div>");
+        sb.append("</div>");
+        sb.append("<script src=\'file:///android_asset/highlight.pack.js\'></script>");
+        sb.append("<script>hljs.initHighlightingOnLoad();</script>");
+        sb.append("</body>");
+        sb.append("</html>");
+        Log.e("", "html : " + sb.toString());
+        return sb.toString();
+    }
+
+    public void showLoading() {
+        mProgressBar.setVisibility(View.VISIBLE);
+    }
+
+    public void hideLoading() {
+        mProgressBar.setVisibility(View.GONE);
+    }
+
+    public void onError(VolleyError error) {
+        hideLoading();
+    }
 }

@@ -24,18 +24,17 @@
 
 package com.techfrontier.demo.adapters;
 
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.Adapter;
+import android.support.v7.widget.RecyclerView.ViewHolder;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.techfrontier.demo.R;
-import com.techfrontier.demo.adapters.MenuAdapter.MenuViewHolder;
-import com.techfrontier.demo.beans.MenuItem;
+import com.techfrontier.demo.adapters.JobAdapter.JobViewHolder;
+import com.techfrontier.demo.beans.Job;
 
 import org.tech.frontier.listeners.OnItemClickListener;
 
@@ -43,43 +42,40 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 菜单列表Adapter
+ * 招聘信息Adapter
  * 
  * @author mrsimple
  */
-public class MenuAdapter extends Adapter<MenuViewHolder> {
+public class JobAdapter extends Adapter<JobViewHolder> {
 
-    List<MenuItem> mDataSet = new ArrayList<MenuItem>();
-    OnItemClickListener<MenuItem> mItemClickListener;
+    List<Job> mDataSet = new ArrayList<Job>();
+    OnItemClickListener<Job> mItemClickListener;
 
-    public MenuAdapter(List<MenuItem> dataSet) {
+    public JobAdapter(List<Job> dataSet) {
         mDataSet = dataSet;
     }
 
+    public JobViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
+        return new JobViewHolder(inflateItemView(viewGroup, R.layout.job_item));
+    }
+
     @Override
-    public void onBindViewHolder(MenuViewHolder viewHolder, int position) {
-        final MenuItem item = getItem(position);
-        viewHolder.nameTextView.setText(item.text);
-        viewHolder.userImageView.setImageResource(item.iconResId);
+    public void onBindViewHolder(JobViewHolder viewHolder, int position) {
+        Job item = getItem(position);
+        viewHolder.companyTextView.setText(item.company);
+        viewHolder.jobTextView.setText(item.job);
+        viewHolder.jobDescTextView.setText(item.desc);
+        viewHolder.emailTextView.setText(item.email);
         setupItemViewClickListener(viewHolder, item);
     }
-
-    @Override
-    public MenuViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
-        return new MenuViewHolder(inflateItemView(viewGroup, R.layout.menu_item));
-    }
-
-    public void setOnItemClickListener(OnItemClickListener<MenuItem> clickListener) {
-        this.mItemClickListener = clickListener;
-    }
-
+    
     /**
      * ItemView的点击事件
      * 
      * @param viewHolder
      * @param position
      */
-    protected void setupItemViewClickListener(MenuViewHolder viewHolder, final MenuItem item) {
+    protected void setupItemViewClickListener(JobViewHolder viewHolder, final Job item) {
         viewHolder.itemView.setOnClickListener(new OnClickListener() {
 
             @Override
@@ -91,7 +87,11 @@ public class MenuAdapter extends Adapter<MenuViewHolder> {
         });
     }
 
-    protected MenuItem getItem(int position) {
+    public void setOnItemClickListener(OnItemClickListener<Job> clickListener) {
+        this.mItemClickListener = clickListener;
+    }
+
+    protected Job getItem(int position) {
         return mDataSet.get(position);
     }
 
@@ -104,14 +104,19 @@ public class MenuAdapter extends Adapter<MenuViewHolder> {
         return mDataSet.size();
     }
 
-    static class MenuViewHolder extends RecyclerView.ViewHolder {
-        public ImageView userImageView;
-        public TextView nameTextView;
+    static class JobViewHolder extends ViewHolder {
+        TextView companyTextView;
+        TextView jobTextView;
+        TextView jobDescTextView;
+        TextView emailTextView;
 
-        public MenuViewHolder(View itemView) {
+        public JobViewHolder(View itemView) {
             super(itemView);
-            userImageView = (ImageView) itemView.findViewById(R.id.menu_icon_imageview);
-            nameTextView = (TextView) itemView.findViewById(R.id.menu_text_tv);
+            companyTextView = (TextView) itemView.findViewById(R.id.company_tv);
+            jobTextView = (TextView) itemView.findViewById(R.id.job_text_tv);
+            jobDescTextView = (TextView) itemView.findViewById(R.id.job_desc_tv);
+            emailTextView = (TextView) itemView.findViewById(R.id.job_email_tv);
         }
+
     }
 }
