@@ -22,23 +22,21 @@
  * THE SOFTWARE.
  */
 
-package com.techfrontier.demo;
+package com.techfrontier.demo.refactor;
 
 import android.annotation.SuppressLint;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
-import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ProgressBar;
 
+import com.techfrontier.demo.R;
 import com.techfrontier.demo.beans.ArticleDetail;
 
 import org.tech.frontier.db.DatabaseHelper;
@@ -54,21 +52,22 @@ import java.net.URL;
  * 
  * @author mrsimple
  */
-public class NeirongActivity extends ActionBarActivity {
+public class ArticleDetailActivity extends BaseActionBarActivity {
 
-    protected Toolbar mToolbar;
     ProgressBar mProgressBar;
     WebView mWebView;
     private String mPostId;
     private String mTitle;
     String mJobUrl;
 
+    @Override
+    protected int getContentViewResId() {
+        return R.layout.activity_detail;
+    }
+
     @SuppressLint("SetJavaScriptEnabled")
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_detail);
-
+    protected void initWidgets() {
         mProgressBar = (ProgressBar) findViewById(R.id.loading_progressbar);
         mWebView = (WebView) findViewById(R.id.articles_webview);
         mWebView.getSettings().setJavaScriptEnabled(true);
@@ -92,19 +91,10 @@ public class NeirongActivity extends ActionBarActivity {
                 }
             }
         });
+    }
 
-        mToolbar = (Toolbar) findViewById(R.id.toolbar);
-        mToolbar.setTitle(R.string.app_name);
-        setSupportActionBar(mToolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        mToolbar.setNavigationOnClickListener(new OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
-
+    @Override
+    protected void afterOnCreate() {
         Bundle extraBundle = getIntent().getExtras();
         if (extraBundle != null && !extraBundle.containsKey("job_url")) {
             mPostId = extraBundle.getString("post_id");
@@ -157,17 +147,6 @@ public class NeirongActivity extends ActionBarActivity {
             }
         }.execute();
     }
-
-    // private String readStream(InputStream stream) throws IOException {
-    // BufferedReader bufferedReader = new BufferedReader(new
-    // InputStreamReader(stream));
-    // StringBuilder sBuilder = new StringBuilder();
-    // String line = null;
-    // while ((line = bufferedReader.readLine()) != null) {
-    // sBuilder.append(line).append("\n");
-    // }
-    // return sBuilder.toString();
-    // }
 
     private void loadArticle2Webview(String htmlContent) {
         mWebView.loadDataWithBaseURL("", wrapHtml(mTitle, htmlContent),
