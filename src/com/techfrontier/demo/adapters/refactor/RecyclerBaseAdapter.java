@@ -61,6 +61,11 @@ public abstract class RecyclerBaseAdapter<D, V extends ViewHolder> extends Adapt
         return mDataSet.get(position);
     }
 
+    public void addItems(List<D> items) {
+        mDataSet.addAll(items);
+        notifyDataSetChanged();
+    }
+
     /*
      * 绑定数据,主要分为两步,绑定数据与设置每项的点击事件处理
      * @see

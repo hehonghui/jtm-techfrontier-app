@@ -36,6 +36,11 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+/**
+ * 网络执行引擎
+ * 
+ * @author mrsimple
+ */
 public final class HttpFlinger {
     private HttpFlinger() {
     }

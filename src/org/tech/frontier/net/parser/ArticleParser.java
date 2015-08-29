@@ -26,7 +26,6 @@ package org.tech.frontier.net.parser;
 
 import android.annotation.SuppressLint;
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.techfrontier.demo.beans.Article;
 
@@ -42,10 +41,11 @@ import java.util.List;
 
 /**
  * 将服务器返回的json数据转为文章列表的解析器
- * 
- * @author mrsimple
  */
+@SuppressLint("SimpleDateFormat")
 public class ArticleParser implements RespParser<List<Article>> {
+
+    private static SimpleDateFormat dateformat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
     @SuppressLint("SimpleDateFormat")
     @Override
@@ -53,20 +53,22 @@ public class ArticleParser implements RespParser<List<Article>> {
         JSONArray jsonArray = new JSONArray(result);
         List<Article> articleLists = new LinkedList<Article>();
         int count = jsonArray.length();
-        SimpleDateFormat dateformat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         for (int i = 0; i < count; i++) {
             JSONObject itemObject = jsonArray.optJSONObject(i);
-            Article articleItem = new Article();
-            articleItem.title = itemObject.optString("title");
-            articleItem.author = itemObject.optString("author");
-            articleItem.post_id = itemObject.optString("post_id");
-            String category = itemObject.optString("category");
-            articleItem.category = TextUtils.isEmpty(category) ? 0 : Integer.valueOf(category);
-            articleItem.publishTime = formatDate(dateformat, itemObject.optString("date"));
-            Log.d("", "title : " + articleItem.title + ", id = " + articleItem.post_id);
-            articleLists.add(articleItem);
+            articleLists.add(parseItem(itemObject));
         }
         return articleLists;
+    }
+
+    private Article parseItem(JSONObject itemObject) {
+        Article articleItem = new Article();
+        articleItem.title = itemObject.optString("title");
+        articleItem.author = itemObject.optString("author");
+        articleItem.post_id = itemObject.optString("post_id");
+        String category = itemObject.optString("category");
+        articleItem.category = TextUtils.isEmpty(category) ? 0 : Integer.valueOf(category);
+        articleItem.publishTime = formatDate(dateformat, itemObject.optString("date"));
+        return articleItem;
     }
 
     private static String formatDate(SimpleDateFormat dateFormat, String dateString) {

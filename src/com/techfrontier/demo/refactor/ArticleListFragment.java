@@ -145,7 +145,7 @@ public class ArticleListFragment extends Fragment implements OnRefreshListener,
                 mSwipeRefreshLayout.setRefreshing(false);
                 // 存储文章列表
                 DatabaseHelper.getInstance().saveArticles(result);
-                if (result.size() > 0) {
+                if (mPageIndex > 1 && page != 1) {
                     mPageIndex++;
                 }
             };

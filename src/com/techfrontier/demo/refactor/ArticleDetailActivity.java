@@ -42,9 +42,11 @@ import com.techfrontier.demo.beans.ArticleDetail;
 import org.tech.frontier.db.DatabaseHelper;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 
 /**
@@ -107,37 +109,36 @@ public class ArticleDetailActivity extends BaseActionBarActivity {
         if (!TextUtils.isEmpty(cacheDetail.content)) {
             loadArticle2Webview(cacheDetail.content);
         } else if (!TextUtils.isEmpty(mPostId)) {
-            getArticleContent();
+            fetchArticleContentAsync();
         } else {
             mWebView.loadUrl(mJobUrl);
         }
     }
 
-    private void getArticleContent() {
+    private void fetchArticleContentAsync() {
         new AsyncTask<Void, Void, String>() {
             @Override
             protected String doInBackground(Void... params) {
+                String result = "";
                 HttpURLConnection urlConnection = null;
                 try {
-                    urlConnection = (HttpURLConnection) new URL(
-                            "http://www.devtf.cn/api/v1/?type=article&post_id=" + mPostId)
-                            .openConnection();
-                    urlConnection.connect();
-                    StringBuilder sBuilder = new StringBuilder();
-                    String line = null;
-                    InputStream netsInputStream = urlConnection.getInputStream();
-                    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(
-                            netsInputStream));
-                    while ((line = bufferedReader.readLine()) != null) {
-                        sBuilder.append(line).append("\n");
-                    }
-                    return sBuilder.toString();
+                    urlConnection = performGetRequest(mPostId);
+                    result = streamToString(urlConnection.getInputStream());
                 } catch (Exception e) {
                     e.printStackTrace();
                 } finally {
                     urlConnection.disconnect();
                 }
-                return "";
+                return result;
+            }
+
+            private HttpURLConnection performGetRequest(String postId)
+                    throws MalformedURLException, IOException {
+                HttpURLConnection urlConnection = (HttpURLConnection) new URL(
+                        "http://www.devtf.cn/api/v1/?type=article&post_id=" + postId)
+                        .openConnection();
+                urlConnection.connect();
+                return urlConnection;
             }
 
             @Override
@@ -146,6 +147,17 @@ public class ArticleDetailActivity extends BaseActionBarActivity {
                 DatabaseHelper.getInstance().saveArticleDetails(new ArticleDetail(mPostId, result));
             }
         }.execute();
+    }
+
+    private static String streamToString(InputStream inputStream) throws IOException {
+        StringBuilder sBuilder = new StringBuilder();
+        String line = null;
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(
+                inputStream));
+        while ((line = bufferedReader.readLine()) != null) {
+            sBuilder.append(line).append("\n");
+        }
+        return sBuilder.toString();
     }
 
     private void loadArticle2Webview(String htmlContent) {
