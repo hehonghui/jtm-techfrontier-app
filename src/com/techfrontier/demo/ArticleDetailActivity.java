@@ -22,7 +22,7 @@
  * THE SOFTWARE.
  */
 
-package com.techfrontier.demo.refactorv2;
+package com.techfrontier.demo;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
@@ -34,9 +34,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ProgressBar;
 
-import com.techfrontier.demo.R;
 import com.techfrontier.demo.beans.ArticleDetail;
-import com.techfrontier.demo.refactor.BaseActionBarActivity;
 
 import org.tech.frontier.db.DatabaseHelper;
 import org.tech.frontier.listeners.DataListener;
@@ -112,12 +110,12 @@ public class ArticleDetailActivity extends BaseActionBarActivity {
 
     private void fetchArticleContent() {
         String reqURL = "http://www.devtf.cn/api/v1/?type=article&post_id=" + mPostId;
-        HttpFlinger.get(reqURL, null,
+        HttpFlinger.get(reqURL,
                 new DataListener<String>() {
                     @Override
                     public void onComplete(String result) {
                         loadArticle2Webview(result);
-                        DatabaseHelper.getInstance().saveArticleDetails(
+                        DatabaseHelper.getInstance().saveArticleDetail(
                                 new ArticleDetail(mPostId, result));
                     }
                 });

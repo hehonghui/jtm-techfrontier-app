@@ -22,7 +22,7 @@
  * THE SOFTWARE.
  */
 
-package com.techfrontier.demo.refactor;
+package com.techfrontier.demo;
 
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
@@ -68,10 +68,8 @@ public abstract class BaseActionBarActivity extends ActionBarActivity {
     }
 
     protected void initWidgets() {
-
     }
     
     protected void afterOnCreate() {
-        
     }
 }

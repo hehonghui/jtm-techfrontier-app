@@ -27,6 +27,7 @@ package org.tech.frontier.net;
 import android.os.AsyncTask;
 
 import org.tech.frontier.listeners.DataListener;
+import org.tech.frontier.net.parser.DefaultParser;
 import org.tech.frontier.net.parser.RespParser;
 
 import java.io.BufferedReader;
@@ -42,7 +43,14 @@ import java.net.URL;
  * @author mrsimple
  */
 public final class HttpFlinger {
+
+    private static final DefaultParser DEFAULT_PARSER = new DefaultParser();
+
     private HttpFlinger() {
+    }
+
+    public static void get(String reqUrl, DataListener<String> listener) {
+        get(reqUrl, DEFAULT_PARSER, listener);
     }
 
     /**

@@ -29,6 +29,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import com.techfrontier.demo.beans.Article;
 import com.techfrontier.demo.beans.ArticleDetail;
@@ -37,6 +38,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * 文章基本信息、文章内容的数据库操作类,包含Article、ArticleDetail的存储、删除操作
+ * 
  * @author mrsimple
  */
 public class DatabaseHelper extends SQLiteOpenHelper {
@@ -95,9 +98,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public void saveArticles(List<Article> dataList) {
         for (Article article : dataList) {
-            mDatabase.insertWithOnConflict(TABLE_ARTICLES, null, article2ContentValues(article),
-                    SQLiteDatabase.CONFLICT_REPLACE);
+            saveSingleArticle(article);
         }
+    }
+
+    public void saveSingleArticle(Article article) {
+        mDatabase.insertWithOnConflict(TABLE_ARTICLES, null, article2ContentValues(article),
+                SQLiteDatabase.CONFLICT_REPLACE);
     }
 
     private ContentValues article2ContentValues(Article item) {
@@ -132,7 +139,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return articles;
     }
 
-    public void saveArticleDetails(ArticleDetail detail) {
+    public void deleteAllArticles() {
+        mDatabase.delete(TABLE_ARTICLES, null, null);
+        Log.e("", "### delete all articles");
+    }
+
+    public void saveArticleDetail(ArticleDetail detail) {
         mDatabase.insertWithOnConflict(TABLE_ARTICLE_CONTENT, null,
                 articleDetailtoContentValues(detail),
                 SQLiteDatabase.CONFLICT_REPLACE);
@@ -142,13 +154,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Cursor cursor = mDatabase.rawQuery("select * from " + TABLE_ARTICLE_CONTENT
                 + " where post_id = "
                 + postId, null);
-        ArticleDetail detail = new ArticleDetail(postId, parseArticleCotent(cursor));
+        ArticleDetail detail = parseArticleDetail(cursor);
         cursor.close();
         return detail;
     }
 
-    private String parseArticleCotent(Cursor cursor) {
-        return cursor.moveToNext() ? cursor.getString(1) : "";
+    private ArticleDetail parseArticleDetail(Cursor cursor) {
+        ArticleDetail articleDetail = new ArticleDetail();
+        articleDetail.postId = cursor.getString(0);
+        articleDetail.content = cursor.getString(1);
+        return articleDetail;
     }
 
     protected ContentValues articleDetailtoContentValues(ArticleDetail detail) {
@@ -156,6 +171,20 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         contentValues.put("post_id", detail.postId);
         contentValues.put("content", detail.content);
         return contentValues;
+    }
+
+    public List<ArticleDetail> loadAllArticleDetails() {
+        List<ArticleDetail> articleDetails = new ArrayList<ArticleDetail>();
+        Cursor cursor = mDatabase.rawQuery("select * from " + TABLE_ARTICLE_CONTENT, null);
+        while (cursor.moveToNext()) {
+            articleDetails.add(parseArticleDetail(cursor));
+        }
+        cursor.close();
+        return articleDetails;
+    }
+
+    public void deleteAllArticleContent() {
+        mDatabase.delete(TABLE_ARTICLE_CONTENT, null, null);
     }
 
 }

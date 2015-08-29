@@ -29,11 +29,18 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 
+/**
+ * 滚动到底部时自动加载的RecyclerView
+ */
 public class AutoLoadRecyclerView extends RecyclerView {
 
-    OnLoadListener mLoadListener;
+    /**
+     * 后续剩余4项数据时触发自动加载
+     */
+    private static final int COUNT = 4;
 
-    boolean isLoading = false;
+    private OnLoadListener mLoadListener;
+    private boolean isLoading = false;
 
     public AutoLoadRecyclerView(Context context) {
         this(context, null);
@@ -45,8 +52,8 @@ public class AutoLoadRecyclerView extends RecyclerView {
 
     public AutoLoadRecyclerView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-        if ( isInEditMode() ) {
-            return ;
+        if (isInEditMode()) {
+            return;
         }
         init();
     }
@@ -65,7 +72,7 @@ public class AutoLoadRecyclerView extends RecyclerView {
     }
 
     private void checkLoadMore(int dx, int dy) {
-        if (isBottom(dx, dy) && !isLoading 
+        if (isBottom(dx, dy) && !isLoading
                 && isValidDelay
                 && mLoadListener != null) {
             isValidDelay = false;
@@ -84,7 +91,7 @@ public class AutoLoadRecyclerView extends RecyclerView {
         LinearLayoutManager layoutManager = (LinearLayoutManager) getLayoutManager();
         int lastVisibleItem = layoutManager.findLastVisibleItemPosition();
         int totalItemCount = layoutManager.getItemCount();
-        return lastVisibleItem >= totalItemCount - 4 && dy > 0;
+        return lastVisibleItem >= totalItemCount - COUNT && dy > 0;
     }
 
     boolean isValidDelay = true;

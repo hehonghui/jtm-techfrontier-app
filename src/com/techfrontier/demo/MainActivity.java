@@ -5,16 +5,12 @@ import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.DialogInterface;
-import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
-import android.view.View;
-import android.view.View.OnClickListener;
 
+import com.techfrontier.demo.R;
 import com.techfrontier.demo.adapters.MenuAdapter;
 import com.techfrontier.demo.beans.MenuItem;
 
@@ -23,48 +19,47 @@ import org.tech.frontier.listeners.OnItemClickListener;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends ActionBarActivity {
-
-    protected FragmentManager mFragmentManager;
-    Fragment mArticleFragment = new WenzhangFragment();
-    Fragment mAboutFragment;
-    private DrawerLayout mDrawerLayout;
-    private RecyclerView mMenuRecyclerView;
-    protected Toolbar mToolbar;
-    private ActionBarDrawerToggle mDrawerToggle;
+/**
+ * 开发技术前线客户端的主界面，由DrawerLayout构成，分为菜单区域和Fragment显示区域，菜单主要由RecyclerView构成，
+ * 其中Fragment区域可以显示文章列表和关于信息.
+ */
+public class MainActivity extends BaseActionBarActivity {
+    protected FragmentManager mFragmentManager; // Fragment管理器
+    Fragment mArticleFragment = new ArticleListFragment(); // 文章列表Fragment
+    Fragment mAboutFragment; // 关于Fragment
+    private DrawerLayout mDrawerLayout; // 除了ActionBar之外的根视图
+    private RecyclerView mMenuRecyclerView; // 菜单RecyclerView
+    private ActionBarDrawerToggle mDrawerToggle; // ActionBar上的菜单开关
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+    protected int getContentViewResId() {
+        return R.layout.activity_main;
+    }
+
+    @Override
+    protected void initWidgets() {
         mFragmentManager = getFragmentManager();
+        setupDrawerToggle();
+        setupMenuRecyclerView();
+        // 显示文章列表Fragment
+        addFragment(mArticleFragment);
+    }
 
-        mToolbar = (Toolbar) findViewById(R.id.toolbar);
-        mToolbar.setTitle(R.string.app_name);
-        setSupportActionBar(mToolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        mToolbar.setNavigationOnClickListener(new OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
-
+    private void setupDrawerToggle() {
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer);
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, mToolbar,
                 R.string.drawer_open,
                 R.string.drawer_close);
         mDrawerToggle.syncState();
         mDrawerLayout.setDrawerListener(mDrawerToggle);
+    }
 
+    private void setupMenuRecyclerView() {
         mMenuRecyclerView = (RecyclerView) findViewById(R.id.menu_recyclerview);
         mMenuRecyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
-        List<MenuItem> menuItems = new ArrayList<MenuItem>();
-        menuItems.add(new MenuItem(getString(R.string.article), R.drawable.home));
-        menuItems.add(new MenuItem(getString(R.string.about_menu), R.drawable.about));
-        menuItems.add(new MenuItem(getString(R.string.exit), R.drawable.exit));
-        MenuAdapter menuAdapter = new MenuAdapter(menuItems);
+        // 初始化菜单Adapter
+        MenuAdapter menuAdapter = new MenuAdapter();
+        menuAdapter.addItems(prepareMenuItems());
         menuAdapter.setOnItemClickListener(new OnItemClickListener<MenuItem>() {
             @Override
             public void onClick(MenuItem item) {
@@ -72,27 +67,25 @@ public class MainActivity extends ActionBarActivity {
             }
         });
         mMenuRecyclerView.setAdapter(menuAdapter);
+    }
 
-        mFragmentManager.beginTransaction().add(R.id.articles_container, mArticleFragment)
-                .commitAllowingStateLoss();
+    private List<MenuItem> prepareMenuItems() {
+        List<MenuItem> menuItems = new ArrayList<MenuItem>();
+        menuItems.add(new MenuItem(getString(R.string.article), R.drawable.home));
+        menuItems.add(new MenuItem(getString(R.string.about_menu), R.drawable.about));
+        menuItems.add(new MenuItem(getString(R.string.exit), R.drawable.exit));
+        return menuItems;
     }
 
     private void clickMenuItem(MenuItem item) {
         mDrawerLayout.closeDrawers();
         switch (item.iconResId) {
             case R.drawable.home: // 全部
-                mFragmentManager.beginTransaction()
-                        .replace(R.id.articles_container, mArticleFragment)
-                        .commit();
+                replaceFragment(mArticleFragment);
                 break;
 
             case R.drawable.about: // 招聘信息
-                if (mAboutFragment == null) {
-                    mAboutFragment = new GuanyuFragment();
-                }
-                mFragmentManager.beginTransaction()
-                        .replace(R.id.articles_container, mAboutFragment)
-                        .commit();
+                replaceFragment(mAboutFragment);
                 break;
 
             case R.drawable.exit: // 退出
@@ -102,6 +95,14 @@ public class MainActivity extends ActionBarActivity {
             default:
                 break;
         }
+    }
+
+    protected void addFragment(Fragment fragment) {
+        mFragmentManager.beginTransaction().add(R.id.articles_container, fragment).commit();
+    }
+
+    protected void replaceFragment(Fragment fragment) {
+        mFragmentManager.beginTransaction().replace(R.id.articles_container, fragment).commit();
     }
 
     private void isQuit() {

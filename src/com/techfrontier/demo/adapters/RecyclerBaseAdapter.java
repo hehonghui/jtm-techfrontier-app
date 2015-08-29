@@ -22,7 +22,7 @@
  * THE SOFTWARE.
  */
 
-package com.techfrontier.demo.adapters.refactor;
+package com.techfrontier.demo.adapters;
 
 import android.support.v7.widget.RecyclerView.Adapter;
 import android.support.v7.widget.RecyclerView.ViewHolder;
@@ -62,6 +62,9 @@ public abstract class RecyclerBaseAdapter<D, V extends ViewHolder> extends Adapt
     }
 
     public void addItems(List<D> items) {
+        // 移除已经存在的数据,避免数据重复
+        items.removeAll(mDataSet) ;
+        // 添加新数据
         mDataSet.addAll(items);
         notifyDataSetChanged();
     }

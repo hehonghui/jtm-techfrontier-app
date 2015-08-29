@@ -26,8 +26,13 @@ package org.tech.frontier.net;
 
 import android.util.Log;
 
+/**
+ * 将文章内容包装到html中的工具类
+ * 
+ * @author mrsimple
+ */
 public final class HtmlUtls {
-    
+
     public static String wrapArticleContent(String title, String content) {
         final StringBuilder sb = new StringBuilder();
         sb.append("<!DOCTYPE html>");
