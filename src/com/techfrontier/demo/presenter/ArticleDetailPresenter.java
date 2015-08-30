@@ -46,7 +46,7 @@ public class ArticleDetailPresenter extends BasePresenter<ArticleDetailView> {
      * 
      * @param postId
      */
-    public void fetchArticleContent(final String postId) {
+    public void fetchArticleContent(final String postId,String title) {
         // 从数据库上获取文章内容缓存
         // ArticleDetail cacheDetail =
         // DatabaseHelper.getInstance().loadArticleDetail(postId);
@@ -54,10 +54,10 @@ public class ArticleDetailPresenter extends BasePresenter<ArticleDetailView> {
 
         String articleContent = loadArticleContentFromDB(postId);
         if (!TextUtils.isEmpty(articleContent)) {
-            String htmlContent = HtmlUtls.wrapArticleContent("", articleContent);
+            String htmlContent = HtmlUtls.wrapArticleContent(title, articleContent);
             mView.onFetchedArticleContent(htmlContent);
         } else {
-            fetchContentFromServer(postId);
+            fetchContentFromServer(postId, title);
         }
     }
 
@@ -65,7 +65,7 @@ public class ArticleDetailPresenter extends BasePresenter<ArticleDetailView> {
         return DatabaseHelper.getInstance().loadArticleDetail(postId).content;
     }
 
-    protected void fetchContentFromServer(final String postId) {
+    protected void fetchContentFromServer(final String postId,final String title) {
         mView.onShowLoding();
         String reqURL = "http://www.devtf.cn/api/v1/?type=article&post_id=" + postId;
         HttpFlinger.get(reqURL,
@@ -76,7 +76,7 @@ public class ArticleDetailPresenter extends BasePresenter<ArticleDetailView> {
                         if (TextUtils.isEmpty(result)) {
                             result = "未获取到文章内容~";
                         }
-                        mView.onFetchedArticleContent(HtmlUtls.wrapArticleContent("", result));
+                        mView.onFetchedArticleContent(HtmlUtls.wrapArticleContent(title, result));
                         DatabaseHelper.getInstance().saveArticleDetail(
                                 new ArticleDetail(postId, result));
                     }

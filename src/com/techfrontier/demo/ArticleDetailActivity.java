@@ -47,6 +47,7 @@ public class ArticleDetailActivity extends BaseActionBarActivity implements Arti
     ProgressBar mProgressBar;
     WebView mWebView;
     private String mPostId;
+    private String mTitle ;
     String mJobUrl;
     ArticleDetailPresenter mPresenter = new ArticleDetailPresenter();
 
@@ -88,6 +89,7 @@ public class ArticleDetailActivity extends BaseActionBarActivity implements Arti
         Bundle extraBundle = getIntent().getExtras();
         if (extraBundle != null && !extraBundle.containsKey("job_url")) {
             mPostId = extraBundle.getString("post_id");
+            mTitle = extraBundle.getString("title") ;
         } else {
             mJobUrl = extraBundle.getString("job_url");
         }
@@ -96,7 +98,7 @@ public class ArticleDetailActivity extends BaseActionBarActivity implements Arti
 
         // 从数据库上获取文章内容缓存，如果没有缓存则从网络获取
         if (!TextUtils.isEmpty(mPostId)) {
-            mPresenter.fetchArticleContent(mPostId);
+            mPresenter.fetchArticleContent(mPostId, mTitle);
         } else {
             mWebView.loadUrl(mJobUrl);
         }
