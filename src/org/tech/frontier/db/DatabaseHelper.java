@@ -38,7 +38,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 文章基本信息、文章内容的数据库操作类,包含Article、ArticleDetail的存储、删除操作
+ * 文章基本信息、文章内容的数据库操作类,包含Article、ArticleDetail的存储、删除操作。 TODO :
+ * DatabaseHelper类中直接操作了两个表的查询、删除等功能，职责过多,需要重构 !
  * 
  * @author mrsimple
  */
@@ -161,6 +162,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     private ArticleDetail parseArticleDetail(Cursor cursor) {
         ArticleDetail articleDetail = new ArticleDetail();
+        if (cursor.getCount() <= 0) {
+            return articleDetail;
+        }
         articleDetail.postId = cursor.getString(0);
         articleDetail.content = cursor.getString(1);
         return articleDetail;

@@ -78,6 +78,7 @@ public final class HttpFlinger {
                         urlConnection.disconnect();
                     }
                 }
+                // TODO : 当请求失败时数据会返回为null,导致很多地方需要判空,如何优化这一步呢?
                 return null;
             }
 

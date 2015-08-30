@@ -34,25 +34,21 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ProgressBar;
 
-import com.techfrontier.demo.beans.ArticleDetail;
-
-import org.tech.frontier.db.DatabaseHelper;
-import org.tech.frontier.listeners.DataListener;
-import org.tech.frontier.net.HtmlUtls;
-import org.tech.frontier.net.HttpFlinger;
+import com.techfrontier.demo.mvpview.ArticleDetailView;
+import com.techfrontier.demo.presenter.ArticleDetailPresenter;
 
 /**
  * 文章阅读页面,使用WebView加载文章。
  * 
  * @author mrsimple
  */
-public class ArticleDetailActivity extends BaseActionBarActivity {
+public class ArticleDetailActivity extends BaseActionBarActivity implements ArticleDetailView {
 
     ProgressBar mProgressBar;
     WebView mWebView;
     private String mPostId;
-    private String mTitle;
     String mJobUrl;
+    ArticleDetailPresenter mPresenter = new ArticleDetailPresenter();
 
     @Override
     protected int getContentViewResId() {
@@ -92,37 +88,39 @@ public class ArticleDetailActivity extends BaseActionBarActivity {
         Bundle extraBundle = getIntent().getExtras();
         if (extraBundle != null && !extraBundle.containsKey("job_url")) {
             mPostId = extraBundle.getString("post_id");
-            mTitle = extraBundle.getString("title");
         } else {
             mJobUrl = extraBundle.getString("job_url");
         }
 
-        // 从数据库上获取文章内容缓存
-        ArticleDetail cacheDetail = DatabaseHelper.getInstance().loadArticleDetail(mPostId);
-        if (!TextUtils.isEmpty(cacheDetail.content)) {
-            loadArticle2Webview(cacheDetail.content);
-        } else if (!TextUtils.isEmpty(mPostId)) {
-            fetchArticleContent();
+        mPresenter.attach(this);
+
+        // 从数据库上获取文章内容缓存，如果没有缓存则从网络获取
+        if (!TextUtils.isEmpty(mPostId)) {
+            mPresenter.fetchArticleContent(mPostId);
         } else {
             mWebView.loadUrl(mJobUrl);
         }
     }
 
-    private void fetchArticleContent() {
-        String reqURL = "http://www.devtf.cn/api/v1/?type=article&post_id=" + mPostId;
-        HttpFlinger.get(reqURL,
-                new DataListener<String>() {
-                    @Override
-                    public void onComplete(String result) {
-                        loadArticle2Webview(result);
-                        DatabaseHelper.getInstance().saveArticleDetail(
-                                new ArticleDetail(mPostId, result));
-                    }
-                });
+    @Override
+    public void onShowLoding() {
+        mProgressBar.setVisibility(View.VISIBLE);
     }
 
-    private void loadArticle2Webview(String htmlContent) {
-        mWebView.loadDataWithBaseURL("", HtmlUtls.wrapArticleContent(mTitle, htmlContent),
+    @Override
+    public void onHideLoding() {
+        mProgressBar.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void onFetchedArticleContent(String html) {
+        mWebView.loadDataWithBaseURL("", html,
                 "text/html", "utf8", "404");
+    }
+    
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mPresenter.detach();
     }
 }

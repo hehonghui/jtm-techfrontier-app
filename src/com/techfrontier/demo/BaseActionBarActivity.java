@@ -41,6 +41,7 @@ public abstract class BaseActionBarActivity extends ActionBarActivity {
         setContentView(getContentViewResId());
         setupToolbar();
         initWidgets();
+        afterOnCreate();
     }
 
     /**

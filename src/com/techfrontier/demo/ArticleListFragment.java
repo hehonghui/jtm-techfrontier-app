@@ -36,12 +36,10 @@ import android.view.ViewGroup;
 
 import com.techfrontier.demo.adapters.ArticleAdapter;
 import com.techfrontier.demo.beans.Article;
+import com.techfrontier.demo.mvpview.ArticleListView;
+import com.techfrontier.demo.presenter.ArticleListPresenter;
 
-import org.tech.frontier.db.DatabaseHelper;
-import org.tech.frontier.listeners.DataListener;
 import org.tech.frontier.listeners.OnItemClickListener;
-import org.tech.frontier.net.HttpFlinger;
-import org.tech.frontier.net.parser.ArticleParser;
 import org.tech.frontier.widgets.AutoLoadRecyclerView;
 import org.tech.frontier.widgets.AutoLoadRecyclerView.OnLoadListener;
 
@@ -53,13 +51,11 @@ import java.util.List;
  * @author mrsimple
  */
 public class ArticleListFragment extends Fragment implements OnRefreshListener,
-        OnLoadListener {
-
+        OnLoadListener, ArticleListView {
     protected SwipeRefreshLayout mSwipeRefreshLayout;
     protected AutoLoadRecyclerView mRecyclerView;
     protected ArticleAdapter mAdapter;
-    private int mPageIndex = 1;
-    ArticleParser mArticleParser = new ArticleParser();
+    private ArticleListPresenter mPresenter = new ArticleListPresenter();
 
     @Override
     public final View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -74,11 +70,8 @@ public class ArticleListFragment extends Fragment implements OnRefreshListener,
     @Override
     public void onResume() {
         super.onResume();
-        loadArticlesFromDB();
-    }
-
-    private void loadArticlesFromDB() {
-        mAdapter.addItems(DatabaseHelper.getInstance().loadArticles());
+        mPresenter.attach(this);
+        mPresenter.fetchLastestArticles();
     }
 
     protected void initRefreshView(View rootView) {
@@ -106,29 +99,6 @@ public class ArticleListFragment extends Fragment implements OnRefreshListener,
         });
         // 设置Adapter
         mRecyclerView.setAdapter(mAdapter);
-        fetchArticles(1);
-    }
-
-    private void fetchArticles(final int page) {
-        mSwipeRefreshLayout.setRefreshing(true);
-        HttpFlinger.get(prepareRequestUrl(), mArticleParser, new DataListener<List<Article>>() {
-            @Override
-            public void onComplete(List<Article> result) {
-                // 添加心数据
-                mAdapter.addItems(result);
-                mSwipeRefreshLayout.setRefreshing(false);
-                // 存储文章列表
-                DatabaseHelper.getInstance().saveArticles(result);
-                if (result.size() > 0) {
-                    mPageIndex++;
-                }
-            }
-        });
-    }
-
-    private String prepareRequestUrl() {
-        return "http://www.devtf.cn/api/v1/?type=articles&page=" + mPageIndex
-                + "&count=20&category=1";
     }
 
     protected void jumpToDetailActivity(Article article) {
@@ -140,12 +110,37 @@ public class ArticleListFragment extends Fragment implements OnRefreshListener,
 
     @Override
     public void onRefresh() {
-        fetchArticles(1);
+        mPresenter.fetchLastestArticles();
     }
 
     @Override
     public void onLoad() {
+        mPresenter.loadNextPageArticles();
+    }
+
+    @Override
+    public void onFetchedArticles(List<Article> result) {
+        mAdapter.addItems(result);
+    }
+    
+    @Override
+    public void clearCacheArticles() {
+        mAdapter.clear();
+    }
+
+    @Override
+    public void onShowLoding() {
         mSwipeRefreshLayout.setRefreshing(true);
-        fetchArticles(mPageIndex);
+    }
+
+    @Override
+    public void onHideLoding() {
+        mSwipeRefreshLayout.setRefreshing(false);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mPresenter.detach();
     }
 }
