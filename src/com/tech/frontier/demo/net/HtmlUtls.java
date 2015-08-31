@@ -22,7 +22,7 @@
  * THE SOFTWARE.
  */
 
-package org.tech.frontier.net;
+package com.tech.frontier.demo.net;
 
 import android.util.Log;
 

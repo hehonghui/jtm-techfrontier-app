@@ -31,7 +31,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 
-import org.tech.frontier.listeners.OnItemClickListener;
+import com.tech.frontier.demo.listeners.OnItemClickListener;
 
 import java.util.ArrayList;
 import java.util.List;

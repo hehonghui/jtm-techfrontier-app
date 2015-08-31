@@ -22,13 +22,13 @@
  * THE SOFTWARE.
  */
 
-package org.tech.frontier.net;
+package com.tech.frontier.demo.net;
 
 import android.os.AsyncTask;
 
-import org.tech.frontier.listeners.DataListener;
-import org.tech.frontier.net.parser.DefaultParser;
-import org.tech.frontier.net.parser.RespParser;
+import com.tech.frontier.demo.listeners.DataListener;
+import com.tech.frontier.demo.net.parser.DefaultParser;
+import com.tech.frontier.demo.net.parser.RespParser;
 
 import java.io.BufferedReader;
 import java.io.IOException;

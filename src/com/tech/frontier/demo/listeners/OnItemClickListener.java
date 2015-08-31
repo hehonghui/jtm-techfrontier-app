@@ -22,7 +22,7 @@
  * THE SOFTWARE.
  */
 
-package org.tech.frontier.listeners;
+package com.tech.frontier.demo.listeners;
 
 
 public interface OnItemClickListener<T> {

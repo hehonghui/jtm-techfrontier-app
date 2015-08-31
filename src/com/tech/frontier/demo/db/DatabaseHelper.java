@@ -22,7 +22,7 @@
  * THE SOFTWARE.
  */
 
-package org.tech.frontier.db;
+package com.tech.frontier.demo.db;
 
 import android.content.ContentValues;
 import android.content.Context;

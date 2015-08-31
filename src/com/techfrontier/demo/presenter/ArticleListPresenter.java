@@ -24,13 +24,12 @@
 
 package com.techfrontier.demo.presenter;
 
+import com.tech.frontier.demo.db.DatabaseHelper;
+import com.tech.frontier.demo.listeners.DataListener;
+import com.tech.frontier.demo.net.HttpFlinger;
+import com.tech.frontier.demo.net.parser.ArticleParser;
 import com.techfrontier.demo.beans.Article;
 import com.techfrontier.demo.mvpview.ArticleListView;
-
-import org.tech.frontier.db.DatabaseHelper;
-import org.tech.frontier.listeners.DataListener;
-import org.tech.frontier.net.HttpFlinger;
-import org.tech.frontier.net.parser.ArticleParser;
 
 import java.util.List;
 

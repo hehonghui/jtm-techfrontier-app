@@ -10,11 +10,10 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
+import com.tech.frontier.demo.listeners.OnItemClickListener;
 import com.techfrontier.demo.R;
 import com.techfrontier.demo.adapters.MenuAdapter;
 import com.techfrontier.demo.beans.MenuItem;
-
-import org.tech.frontier.listeners.OnItemClickListener;
 
 import java.util.ArrayList;
 import java.util.List;

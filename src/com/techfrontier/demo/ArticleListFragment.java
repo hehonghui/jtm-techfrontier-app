@@ -34,14 +34,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.tech.frontier.demo.listeners.OnItemClickListener;
+import com.tech.frontier.demo.widgets.AutoLoadRecyclerView;
+import com.tech.frontier.demo.widgets.AutoLoadRecyclerView.OnLoadListener;
 import com.techfrontier.demo.adapters.ArticleAdapter;
 import com.techfrontier.demo.beans.Article;
 import com.techfrontier.demo.mvpview.ArticleListView;
 import com.techfrontier.demo.presenter.ArticleListPresenter;
-
-import org.tech.frontier.listeners.OnItemClickListener;
-import org.tech.frontier.widgets.AutoLoadRecyclerView;
-import org.tech.frontier.widgets.AutoLoadRecyclerView.OnLoadListener;
 
 import java.util.List;
 

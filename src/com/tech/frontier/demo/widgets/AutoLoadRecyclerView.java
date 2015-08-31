@@ -22,7 +22,7 @@
  * THE SOFTWARE.
  */
 
-package org.tech.frontier.widgets;
+package com.tech.frontier.demo.widgets;
 
 import android.content.Context;
 import android.support.v7.widget.LinearLayoutManager;

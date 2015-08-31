@@ -22,8 +22,13 @@
  * THE SOFTWARE.
  */
 
-package org.tech.frontier.listeners;
+package com.tech.frontier.demo.net.parser;
 
-public interface DataListener<T> {
-    void onComplete(T result);
+import org.json.JSONException;
+
+public class DefaultParser implements RespParser<String> {
+    @Override
+    public String parseResponse(String result) throws JSONException {
+        return result;
+    }
 }

@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
 
-    <org.tech.frontier.widgets.AutoLoadRecyclerView
+    <com.tech.frontier.demo.widgets.AutoLoadRecyclerView
         android:id="@+id/articles_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />

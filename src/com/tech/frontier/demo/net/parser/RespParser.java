@@ -22,7 +22,7 @@
  * THE SOFTWARE.
  */
 
-package org.tech.frontier.net.parser;
+package com.tech.frontier.demo.net.parser;
 
 import org.json.JSONException;
 

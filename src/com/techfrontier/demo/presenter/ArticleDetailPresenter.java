@@ -26,13 +26,12 @@ package com.techfrontier.demo.presenter;
 
 import android.text.TextUtils;
 
+import com.tech.frontier.demo.db.DatabaseHelper;
+import com.tech.frontier.demo.listeners.DataListener;
+import com.tech.frontier.demo.net.HtmlUtls;
+import com.tech.frontier.demo.net.HttpFlinger;
 import com.techfrontier.demo.beans.ArticleDetail;
 import com.techfrontier.demo.mvpview.ArticleDetailView;
-
-import org.tech.frontier.db.DatabaseHelper;
-import org.tech.frontier.listeners.DataListener;
-import org.tech.frontier.net.HtmlUtls;
-import org.tech.frontier.net.HttpFlinger;
 
 /**
  * 文章详情页面的Presenter,负责加载文章内容。如果数据库中有缓存，那么使用缓存，否则从网络上下载内容到本地，并存储。
